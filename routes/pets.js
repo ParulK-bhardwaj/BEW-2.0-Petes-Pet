@@ -10,13 +10,20 @@ module.exports = (app) => {
   // We are using the i modifier on a new Regular Expression to do case-insensitive matching
   // SEARCH PET
   app.get('/search', (req, res) => {
-    term = new RegExp(req.query.term, 'i')
-    Pet.find({$or:[
-      {'name': term},
-      {'species': term}
-    ]}).exec((err, pets) => {
-      res.render('pets-index', { pets: pets });
-    })
+    const term = new RegExp(req.query.term, 'i')
+    const page = req.query.page || 1
+    Pet.paginate(
+      {
+        $or: [
+          { 'name': term },
+          { 'species': term }
+        ]
+      },
+      { page: page }).then((results) => {
+        // Why are we passing the original term and not our RegExp? 
+        // Because we need the view to populate the correct URL, and it needs a string to do that!
+        res.render('pets-index', { pets: results.docs, pagesCount: results.pages, currentPage: results.page, term: req.query.term });
+      });
   });
 
   // NEW PET
