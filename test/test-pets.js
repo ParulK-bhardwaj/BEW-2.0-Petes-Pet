@@ -116,4 +116,16 @@ describe('Pets', ()  => {
       });
     });
   });
+
+  // SEARCH
+  it('should search ALL pets by name on /search GET', (done) => {
+    chai.request(server)
+      .get('/search')
+      .query({ term: 'norman' }) // Pass the search term as a query parameter
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.should.be.html;
+        done();
+      });
+  });
 });

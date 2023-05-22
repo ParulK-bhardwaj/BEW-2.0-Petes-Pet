@@ -6,6 +6,19 @@ module.exports = (app) => {
 
   // INDEX PET => index.js
 
+  // Simple Search means doing a Fuzzy Keyword Lookup on one parameter using Regular Expressions. 
+  // We are using the i modifier on a new Regular Expression to do case-insensitive matching
+  // SEARCH PET
+  app.get('/search', (req, res) => {
+    term = new RegExp(req.query.term, 'i')
+    Pet.find({$or:[
+      {'name': term},
+      {'species': term}
+    ]}).exec((err, pets) => {
+      res.render('pets-index', { pets: pets });
+    })
+  });
+
   // NEW PET
   app.get('/pets/new', (req, res) => {
     res.render('pets-new');
