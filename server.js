@@ -6,9 +6,12 @@ if (!process.env.PORT) {
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
+// This morgan module is used for logging HTTP requests and responses. 
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+//  This middleware allows the use of HTTP verbs. It overrides the HTTP methos of a request
+// based on the _method query parameter value.
 const methodOverride = require('method-override')
 
 const app = express();
@@ -24,7 +27,8 @@ mongoose.connect('mongodb://localhost/local', {
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-
+// This middleware is used to serve static files, such as CSS, JavaScript, and images,
+//  from the specified directory (public) using the Express application.
 app.use(express.static(path.join(__dirname, 'public')));
 
 // override with POST having ?_method=DELETE or ?_method=PUT
