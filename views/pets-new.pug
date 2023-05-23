@@ -1,30 +1,39 @@
 extends layout
-
+//- We have also added client-side validations into our HTML form. 
+//- This will prevent people from even submitting a form that has invalid data
+//- The * is another visual way to denote a required field!
 block content
     
   .row.justify-content-center
     .col-sm-6
       legend New Pet
-      form(action="/pets", method="post")
+      form(action="#" id="new-pet", method="post")
         .form-group
             label Name
-            input.form-control(name="name")
+            span.required.text-danger *
+            input.form-control(name="name" required)
         .form-group
             label Birthday
-            input.form-control(name="birthday")
+            span.required.text-danger *
+            input.form-control(name="birthday" required)
         .form-group
             label Species
-            input.form-control(name="species")
+            span.required.text-danger *
+            input.form-control(name="species" required)
         .form-group
             label Rectangular Image URL
-            input.form-control(name="picUrl") 
+            span.required.text-danger *
+            input.form-control(name="picUrl" required type="url") 
         .form-group
             label Square Image URL
-            input.form-control(name="picUrlSq")   
+            span.required.text-danger *
+            input.form-control(name="picUrlSq" required type="url")   
         .form-group
             label Favorite Food
-            input.form-control(name="favoriteFood") 
+            span.required.text-danger *
+            input.form-control(name="favoriteFood" required) 
         .form-group
             label Description
-            textarea.form-control(name="description")   
+            span.required.text-danger *
+            textarea.form-control(name="description" required minlength="140")   
         button(type="submit").btn.btn-primary Save
