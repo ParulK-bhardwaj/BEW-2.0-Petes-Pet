@@ -24,6 +24,9 @@ mongoose.connect('mongodb://localhost/local', {
   useFindAndModify: false
 });
 
+// Stripe 
+app.locals.PUBLIC_STRIPE_API_KEY = process.env.PUBLIC_STRIPE_API_KEY
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -40,7 +43,6 @@ app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-
 
 require('./routes/index.js')(app);
 require('./routes/pets.js')(app);

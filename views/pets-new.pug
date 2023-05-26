@@ -1,7 +1,7 @@
 extends layout
 //- We have also added client-side validations into our HTML form. 
 //- This will prevent people from even submitting a form that has invalid data
-//- The * is another visual way to denote a required field!
+//- Added * to give a visual way to denote a required field!
 block content
     
   .row.justify-content-center
@@ -35,5 +35,9 @@ block content
         .form-group
             label Description
             span.required.text-danger *
-            textarea.form-control(name="description" required minlength="140")   
+            textarea.form-control(name="description" required minlength="140")
+        .form-group
+            label Price
+            span.required.text-danger *
+            textarea.form-control(name="price" required type="number")  
         button(type="submit").btn.btn-primary Save
