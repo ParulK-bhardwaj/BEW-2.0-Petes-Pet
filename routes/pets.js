@@ -1,6 +1,38 @@
 // MODELS
 const Pet = require('../models/pet');
 
+// UPLOADING TO AWS S3
+const multer  = require('multer');
+const upload = multer({ dest: 'uploads/' });
+const Upload = require('s3-uploader');
+
+// to initialize and configure the s3-uploader object.
+const client = new Upload(process.env.S3_BUCKET, {
+  // Set the path in AWS to the bucket and with the access keys.
+  aws: {
+    path: 'pets/avatar',
+    region: process.env.S3_REGION,
+    // acl: 'public-read',
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  },
+  // Clean up - when the upload is complete, we want to delete the originals and caches.
+  cleanup: {
+    versions: true,
+    original: true
+  },
+  // We want two versions: one a rectangle and one a square, neither wider than 300-400px.
+  versions: [{
+    maxWidth: 400,
+    aspect: '16:10',
+    suffix: '-standard'
+  },{
+    maxWidth: 300,
+    aspect: '1:1',
+    suffix: '-square'
+  }]
+});
+
 // PET ROUTES
 module.exports = (app) => {
 
@@ -30,19 +62,34 @@ module.exports = (app) => {
   app.get('/pets/new', (req, res) => {
     res.render('pets-new');
   });
-
+  
   // CREATE PET
-  app.post('/pets', (req, res) => {
+  app.post('/pets', upload.single('avatar'), async (req, res, next) => {
     let pet = new Pet(req.body);
-    pet.save()
-      .then((pet) => {
+    if (req.file) {
+      // Upload the images
+      await client.upload(req.file.path, {}, async function (err, versions, meta) {
+        if (err) {
+          console.log(err.message)
+          return res.status(400).send({ err: err })
+        };
+
+        // Pop off the -square and -standard and just use the one URL to grab the image
+        for (const image of versions) {
+          let urlArray = image.url.split('-');
+          urlArray.pop();
+          let url = urlArray.join('-');
+          pet.avatarUrl = url;
+          await pet.save();
+        }
+
         res.send({ pet: pet });
-      })
-      .catch((err) => {
-        // STATUS OF 400 FOR VALIDATIONS
-        res.status(400).send(err.errors);
-      }) ;
-  });
+      });
+    } else {
+      await pet.save();
+      res.send({ pet: pet });
+    }
+  })
 
   // SHOW PET
   app.get('/pets/:id', (req, res) => {
