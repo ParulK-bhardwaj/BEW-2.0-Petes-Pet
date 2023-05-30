@@ -43,21 +43,40 @@ module.exports = (app) => {
   // Simple Search means doing a Fuzzy Keyword Lookup on one parameter using Regular Expressions. 
   // We are using the i modifier on a new Regular Expression to do case-insensitive matching
   // SEARCH PET
-  app.get('/search', (req, res) => {
-    const term = new RegExp(req.query.term, 'i')
-    const page = req.query.page || 1
-    Pet.paginate(
-      {
-        $or: [
-          { 'name': term },
-          { 'species': term }
-        ]
-      },
-      { page: page }).then((results) => {
-        // Why are we passing the original term and not our RegExp? 
-        // Because we need the view to populate the correct URL, and it needs a string to do that!
-        res.render('pets-index', { pets: results.docs, pagesCount: results.pages, currentPage: results.page, term: req.query.term });
-      });
+  // app.get('/search', (req, res) => {
+  //   const term = new RegExp(req.query.term, 'i')
+  //   const page = req.query.page || 1
+  //   Pet.paginate(
+  //     {
+  //       $or: [
+  //         { 'name': term },
+  //         { 'species': term }
+  //       ]
+  //     },
+  //     { page: page }).then((results) => {
+  //       // Why are we passing the original term and not our RegExp? 
+  //       // Because we need the view to populate the correct URL, and it needs a string to do that!
+  //       res.render('pets-index', { pets: results.docs, pagesCount: results.pages, currentPage: results.page, term: req.query.term });
+  //     });
+  // });
+
+  // SEARCH
+  app.get('/search', function (req, res) {
+    Pet
+        .find(
+            { $text : { $search : req.query.term } },
+            { score : { $meta: "textScore" } }
+        )
+        .sort({ score : { $meta : 'textScore' } })
+        .limit(20)
+        .exec(function(err, pets) {
+          if (err) { return res.status(400).send(err) }
+          if (req.header('Content-Type') == 'application/json') {
+            return res.json({ pets: pets });
+          } else {
+            return res.render('pets-index', { pets: pets, term: req.query.term });
+          }
+        });
   });
 
   // NEW PET
