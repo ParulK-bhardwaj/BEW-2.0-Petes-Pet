@@ -17,7 +17,7 @@ block content
                     input.form-control(name="species" value=pet.species)
                 .form-group
                     label Avatar
-                    input.form-control(name="avatar" type="file")
+                    input.form-control(name="avatar" type="file" value=pet.avatar)
                 .form-group
                     label Favorite Food
                     input.form-control(name="favoriteFood" value=pet.favoriteFood)
@@ -26,7 +26,7 @@ block content
                     textarea.form-control(name="description")= pet.description
                 .form-group
                     label Price
-                    textarea.form-control(name="price" required type="number")
+                    textarea.form-control(name="price")=pet.price
                 button(type="submit").btn.btn-primary Save
             .text-right
                 form(action=`/pets/${pet._id}?_method=DELETE`, method="POST")

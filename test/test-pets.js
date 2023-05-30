@@ -11,7 +11,9 @@ const fido =     {
     "favoriteFood": "Liver",
     "picUrl": "http://www.gpamass.com/s/img/emotionheader713297504.jpg",
     "picUrlSq": "https://www.collinsdictionary.com/images/thumb/greyhound_21701074_250.jpg",
-    "description": "Fido is a dog and he's a good dog who loves to play and hang out with his owners. He also likes to nap and enjoys eating dog food"
+    "avatarUrl":"http://www.gpamass.com/s/img/emotionheader713297504.jpg",
+    "description": "Fido is a dog and he's a good dog who loves to play and hang out with his owners. He also likes to nap and enjoys eating dog food",
+    "price": 9.99
 }
 
 chai.use(chaiHttp);
@@ -127,5 +129,17 @@ describe('Pets', ()  => {
         res.should.be.html;
         done();
       });
+  });
+
+  it('should list ALL pets on /pets GET', function(done) {
+    chai.request(server)
+        .get('/')
+        .set('content-type', 'application/json')
+        .end(function(err, res){
+          res.should.have.status(200);
+          res.should.be.json;
+          res.body.should.be.a('object');
+          done();
+        });
   });
 });
